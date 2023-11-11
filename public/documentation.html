@@ -4,10 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Build a server-side component of a “movies” web application.</h1>
     <p>The web application will provide users with access to information about different movies, directors, and genres. 
     Users will be able to sign up, update their personal information, and create a list of their favorite movies.</p>
+
+    <h2>URL, Request and Response</h2>
+    <table>
+        <tr>
+            <th>URL</th>
+            <th>Request method</th>
+            <th>Response</th>
+        </tr>
+        <tr>
+            <td>/movies</td>
+            <td>GET</td>
+            <td>Return a list of ALL movies to the user</td>
+        </tr>
+        <tr>
+            <td>/movies/[movie name]</td>
+            <td>GET</td>
+            <td>Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title to the user</td>
+        </tr>
+        <tr>
+            <td>/movies/genre/[genre name]</td>
+            <td>GET</td>
+            <td>Return data about a genre (description) by name/title (e.g., “Thriller”)</td>
+        </tr>
+        <tr>
+            <td>/movies/directors/[director's name]</td>
+            <td>GET</td>
+            <td>Return data about a director (bio, birth year, death year) by name</td>
+        </tr>
+        <tr>
+            <td>users/register</td>
+            <td>POST</td>
+            <td>Allow new users to register</td>
+        </tr>
+        <tr>
+            <td>users/[user id]/profile</td>
+            <td>PUT</td>
+            <td>Allow users to update their user info (username)</td>
+        </tr>
+        <tr>
+            <td>/users/[user id]/myfavourites</td>
+            <td>POST</td>
+            <td>Allow users to add a movie to their list of favorites</td>
+        </tr>
+        <tr>
+            <td>/users/[user id]/myfavourites</td>
+            <td>DELETE</td>
+            <td>Allow users to remove a movie from their list of favorites</td>
+        </tr>
+        <tr>
+            <td>/users/[user id]/account-setting</td>
+            <td>DELETE</td>
+            <td>Allow existing users to deregister </td>
+        </tr>
+    </table>
+
+
+
+    <h2>More Details</h2>
+    <table>
+        <tr>
+            <th>Logic</th>
+            <th>URL</th>
+            <th>Parameters</th>
+            <th>HTTP Method</th>
+            <th>Request body data format</th>
+            <th>Response body data format</th>
+        </tr>
+
+        <tr>
+            <td>Get a list of all movies.</td>
+            <td>/movies</td>
+            <td>None</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON object holding data about all movies </td>
+        </tr>
+
+        <tr>
+            <td>Get information (description, genre, director, image URL, whether it is featured or not) about one movie by title.</td>
+            <td>/movies/[movie name]</td>
+            <td>movieName</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON object holding data about that one movie </td>
+        </tr>
+
+        <tr>
+            <td>Get information about a genre by movie name/title (e.g.,"Thriller").</td>
+            <td>/movies/genre/[genre name]</td>
+            <td>genreName</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON object holding data about a genre</td>
+        </tr>
+
+        <tr>
+            <td>Get information about a direcotr (bio, birth year, death year) by director's name.</td>
+            <td>/movies/directors/[director's name]</td>
+            <td>directorName</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON object holding data about a director</td>
+        </tr>
+
+        <tr>
+            <td>Allow new users to register</td>
+            <td>users/register</td>
+            <td>None</td>
+            <td>POST</td>
+            <td>A JSON object holding data about the user, structured:<br>{<br>"userName": "Jo Bidden",<br>"password": "1234567",<br>"email": "jb@example.com"<br>}</td>
+            <td>A JSON object holding data about the user registered, including an ID:<br>{<br>"ID": "0007",<br>"userName": "Jo Bidden",<br>"password": "1234567",<br>"email": "jb@example.com"<br>}</td>
+        </tr>
+
+        <tr>
+            <td>Allow users to update their user info (username)</td>
+            <td>users/[user id]/profile</td>
+            <td>userId</td>
+            <td>PUT</td>
+            <td>None</td>
+            <td>Showing a text message indicating whether the info was successfully updated.</td>
+        </tr>
+
+        <tr>
+            <td>Allow users to add a movie to their list of favourites.</td>
+            <td>/users/[user id]/myfavourites</td>
+            <td>userId</td>
+            <td>POST</td>
+            <td>None</td>
+            <td>Showing only a text that a movie has been added — more on this later.</td>
+        </tr>
+
+        <tr>
+            <td>Allow users to remove a movie from their list of favorites.</td>
+            <td>/users/[user id]/myfavourites</td>
+            <td>userId</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Showing only a text that a movie has been removed — more on this later.</td>
+        </tr>
+
+        <tr>
+            <td>Allow existing users to deregister.</td>
+            <td>/users/[user id]/account-setting</td>
+            <td>userId</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Showing only a text that a user email has been removed — more on this later</td>
+        </tr>
+    </table>
 </body>
 </html>
