@@ -1,0 +1,50 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+#root, #__next {
+  isolation: isolate;
+}
+
+h1, h2 {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+p {
+  padding: 40px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 90%;
+  margin-inline: auto;
+  margin-bottom: 20px;
+}
+
+td, th {
+  border: 1px solid #e7e7e7;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #e7e7e7;
+}
+
