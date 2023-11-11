@@ -57,8 +57,9 @@ let topMovies = [
   }
 ];
 
+//http get method, take in a string doe endpoint, a function includes a request and a response
 app.get ('/', (req, res) => {
-  res.send('Top moveis of the 21st century');
+  res.send('Top moveis of the 21st century!');
 });
 
 app.get('/movies',(req, res) => {
