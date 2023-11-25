@@ -1,25 +1,23 @@
 const express = require('express');
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.movie;
 const Users = Models.user;
-mongoose.connect('mongodb://localhost:27017/movieappDB', {userNewUrlParser: true, useUnifiedTopology: true});
 
-Movies.find({'genre.name':'drama'}).then().catch();
+mongoose.connect('mongodb://localhost:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 //create new user
-
 app.post('/users/resigter', async (req, res) => {
   await Users.findOne({username: req.body.username})
   .then ((user) => {
     if(user) {
-      return res.status(400).send(req.body.username + 'already exists');
+      return res.status(400).send(req.body.username + ' already exists');
     } else {
       Users.create({
         username: req.body.username,
@@ -35,94 +33,41 @@ app.post('/users/resigter', async (req, res) => {
   }).catch (err => {console.log(err);res.status(500).send('Error: ' + err)});
 })
 
+//get all users
+app.get('/users', async (req, res) => {
+  await Users.find().then(users => {res.status(201).json(users);})
+  .catch(err => {
+    console.log(err);
+    res.status(500).send('Error: ' + err);
+  })
+});
 
-let users = [
-  {
-    id: 1,
-    name: 'Dan',
-    favouriteMovie: ["The Fountain"]//has to be an array
-  }
-];
-let movies = [];
+//get all movies
+app.get('/movies', async (req, res) => {
+  await Movies.find().then(movies => {res.status(201).json(movies);})
+  .catch(err => {
+    console.log(err);
+    res.status(500).send('Error: ' + err)})
+});
 
-//LOCAL STORAGE
-let topMovies = [
-  {
-    title: 'There Will Be Blood',
-    director:'Paul Thomas Anderson',
-    year:'2007'
-  },
-  {
-    title: '12 Years a Slave',
-    director:'Steve McQueen',
-    year:'2013'
-  },
-  {
-    title: 'In the Mood for Love',
-    director:'Wong Kar-Wai',
-    year:'2000'
-  },
-  {
-    title: 'Spirited Away',
-    director:'Hayao Miyazaki',
-    year:'2001'
-  },
-  {
-    title: '24 Hour Party People',
-    director:'Michael Winterbottom ',
-    year:'2002'
-  },
-  {
-    title: 'Brokeback Mountain',
-    director:'Ang Lee',
-    year:'2005'
-  },
-  {
-    title: 'Dogtooth',
-    director:'Yorgos Lanthimos',
-    year:'2009'
-  },
-  {
-    title: 'Lost in Translation',
-    director:'Sofia Coppola',
-    year:'2003'
-  },
-  {
-    title: 'No Country for Old Men',
-    director:'Coen Brothers',
-    year:'2007'
-  },
-  {
-    title: 'Once Upon a Time in Hollywood',
-    director:'Quentin Tarantino',
-    year:'2019'
-  }
-];
+// Get a user by username
+app.get('/users/:username', async (req, res) => {
+  await Users.findOne({ username: req.params.username })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
 
 //http get method, take in a string doe endpoint, a function includes a request and a response
 app.get ('/', (req, res) => {
   res.send('Hello, this is the font page of the movie app, which has not been built yet..');
 });
 
-app.get('/top10',(req, res)=> {
-  //res.send('Top moveis of the 21st century!');
-  res.status(200).json(topMovies);
-});
-//checking if the code works with top 10 movies array
-app.get('/top10/:movieName',(req, res)=> {
-  const { movieName } = req.params;
-  const movie = topMovies.find( movie => movie.title === movieName)
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(404).send('Sorry, no movies found');
-  }
-});
-
-app.get('/movies',(req, res) => {
-  res.status(200).send('Successful GET request retuning data on all movies');
-});
 
 app.get('/movies/:movieName', (req, res)=>{
   const { movieName } = req.params;
@@ -157,19 +102,6 @@ app.get('/movies/directors/:directorName', (req, res)=> {
   }
 });
 
-
-
-//create
-app.post('/users/register', (req, res)=> {
-  const newUser = req.body;
-  if (newUser.name) {
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser)
-  } else {
-    res.status(400).send('users need names')
-  }
-});
 
 //update
 app.put('/users/:userId/profile', (req, res)=> {
