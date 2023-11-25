@@ -1,9 +1,39 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-const uuid = require('uuid');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(bodyParser.json());
+
+const uuid = require('uuid');
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+const Movies = Models.movie;
+const Users = Models.user;
+mongoose.connect('mongodb://localhost:27017/movieappDB', {userNewUrlParser: true, useUnifiedTopology: true});
+
+Movies.find({'genre.name':'drama'}).then().catch();
+
+//create new user
+
+app.post('/users/resigter', async (req, res) => {
+  await Users.findOne({username: req.body.username})
+  .then ((user) => {
+    if(user) {
+      return res.status(400).send(req.body.username + 'already exists');
+    } else {
+      Users.create({
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        birthday: req.body.birthday
+      }).then((user) =>{res.status(201).json(user)})
+      .catch((err)=> {
+        console.log(err);
+        res.status(500).send('Error: ' + err);
+      })
+    }
+  }).catch (err => {console.log(err);res.status(500).send('Error: ' + err)});
+})
 
 
 let users = [
@@ -126,6 +156,9 @@ app.get('/movies/directors/:directorName', (req, res)=> {
     res.status(404).send('Sorry, no directors found');
   }
 });
+
+
+
 //create
 app.post('/users/register', (req, res)=> {
   const newUser = req.body;
