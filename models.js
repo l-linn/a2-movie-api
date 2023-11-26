@@ -12,15 +12,15 @@ let movieSchema = mongoose.Schema({
   },
   genre: {
     type: String,
-    description: String
+    description: String,
+    required: true
   },
-  description: {type: String,required: true}
+  description: {type: String,required: true},
+  actors: [String]
 });
 
 let userSchema = mongoose.Schema({
   username: {type: String, required: true},
-  firstName: String,
-  lastName: String,
   birthday: Date,
   email: {type: String, required: true},
   password: {type: String, required: true},
