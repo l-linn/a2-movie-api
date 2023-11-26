@@ -10,7 +10,7 @@ const Models = require('./models.js');
 const Movies = Models.movie;
 const Users = Models.user;
 
-mongoose.connect('mongodb://localhost:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 //create new user
 app.post('/users/resigter', async (req, res) => {
@@ -44,13 +44,15 @@ app.get('/users', async (req, res) => {
 
 //get all movies
 app.get('/movies', async (req, res) => {
-  await Movies.find().then(movies => {res.status(201).json(movies);})
-  .catch(err => {
+  await Movies.find().then( movies => {
+    res.status(201).json(movies);
+  })
+  .catch( err => {
     console.log(err);
     res.status(500).send('Error: ' + err)})
 });
 
-// Get a user by username
+//get a user by username
 app.get('/users/:username', async (req, res) => {
   await Users.findOne({ username: req.params.username })
     .then((user) => {
@@ -62,34 +64,31 @@ app.get('/users/:username', async (req, res) => {
     });
 });
 
-
-//http get method, take in a string doe endpoint, a function includes a request and a response
-app.get ('/', (req, res) => {
-  res.send('Hello, this is the font page of the movie app, which has not been built yet..');
+//get a movie by title
+app.get('/movies/:title', async (req, res) => {
+  await Movies.findOne({ title: req.params.title })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-
-app.get('/movies/:movieName', (req, res)=>{
-  const { movieName } = req.params;
-  const movie = movies.find( movie => movie.title === movieName)
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(404).send('Sorry, no movies found');
-  }
+//get genre by genre type - not working yet
+app.get('/movies/genre/:type', async (req, res) => {
+  await Movies.findOne({ 'genre.type': req.params.type })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-app.get('/movies/genre/:genreName', (req, res)=> {
-  const { genreName } = req.params;
-  const genre = movies.find( movie => movie.genre.name === genreName)// access the property of the object
-
-  if (genre) {
-    res.status(200).json(genre);
-  } else {
-    res.status(404).send('Sorry, no genre found');
-  }
-});
+//get director by director name
 
 app.get('/movies/directors/:directorName', (req, res)=> {
   const { directorName } = req.params;
@@ -161,6 +160,12 @@ app.use(express.static('public'));
 app.use((err, req, res, next)=>{
   console.error(err.stack);
   res.status(500).send('Something is broken..');
+});
+
+
+//http get method, take in a string/ endpoint, a function includes a request and a response
+app.get ('/', (req, res) => {
+  res.send('Hello, this is the font page of the movie app, which has not been built yet..');
 });
 
 app.listen(8080, () =>{
