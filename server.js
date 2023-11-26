@@ -76,11 +76,11 @@ app.get('/movies/:title', async (req, res) => {
     });
 });
 
-//get genre by genre type - not working yet
+//get genre by genre type - Mongoose not picking up my genre data in MongoDB?
 app.get('/movies/genre/:type', async (req, res) => {
   await Movies.findOne({ 'genre.type': req.params.type })
     .then((movie) => {
-      res.json(movie);
+      res.json(movie.genre);
     })
     .catch((err) => {
       console.error(err);
@@ -89,71 +89,60 @@ app.get('/movies/genre/:type', async (req, res) => {
 });
 
 //get director by director name
-
-app.get('/movies/directors/:directorName', (req, res)=> {
-  const { directorName } = req.params;
-  const director = movies.find( movie => movie.director.name === directorName)
-
-  if (director) {
-    res.status(200).json(director);
-  } else {
-    res.status(404).send('Sorry, no directors found');
-  }
+app.get('/movies/director/:name', async (req, res) => {
+  await Movies.findOne({ 'director.name': req.params.name })
+    .then((movie) => {
+      res.json(movie.director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-
-//update
-app.put('/users/:userId/profile', (req, res)=> {
-  const { userId } = req.params;
-  const updatedUser = req.body;
-
-  let user = users.find( user => user.id == userId); //use two equal signs because the uuid is a number but user input will be a string
-
-  if (user) {
-    user.name = updatedUser.name;
-    res.status(200).json(user).send('movie added');
-  } else {
-    res.status(400).send('Sorry, no users found');
-  }
+//update a user's info by username
+app.put('/users/:username/profile', async (req, res) => {
+  await Users.findOneAndUpdate({ username: req.params.username },{
+    $set: {
+    username: req.body.username,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    password: req.body.password,
+    email: req.body.email,
+    birthday: req.body.birthday}},
+    { new: true }).then(updatedUser =>{res.json(updatedUser);})
+    .catch(err => {res.status(500).send('Error: ' + err);})
 });
 
-app.post('/users/:userId/myfavourites', (req, res)=> {
-  const { userId } = req.params;
-  const movieTitle = req.body.favouriteMovie;
-
-  let user = users.find( user => user.id == userId);
-  if (user) {
-    user.favouriteMovie.push(movieTitle);
-    res.status(200).send(`${movieTitle} is added to My Favourites`);
-  } else {
-    res.status(400).send('Sorry, no users found');
-  }
+//add/post a movie to a user's list
+app.post('/users/:username/favorites/:movieID', async (req, res) => {
+  await Users.findOneAndUpdate({ username: req.params.username }, {
+    $push: { favorites: req.params.movieID }},
+    { new: true })
+    .then((updatedUser) => {res.json(updatedUser);})
+    .catch((err) => {res.status(500).send('Error: ' + err);})
 });
 
-app.delete('/users/:userId/myfavourites', (req, res)=> {
-  const { userId } = req.params;
-  const movieTitle = req.body.favouriteMovie;
-
-  let user = users.find( user => user.id == userId);
-  if (user) {
-    user.favouriteMovie = user.favouriteMovie.filter( title => title !== movieTitle);//filter out all movies that is not movieTitle
-    res.status(200).send(`${movieTitle} is removed from your list!`);
-  } else {
-    res.status(400).send('Sorry, no users found');
-  }
+//delete a movie from a user's list
+app.delete('/users/:username/favorites/:movieID', async (req, res) => {
+  await Users.findOneAndUpdate({ username: req.params.username }, {
+    $pull: { favorites: req.params.movieID }},
+    { new: true })
+    .then((updatedUser) => {res.json(updatedUser);})
+    .catch((err) => {res.status(500).send('Error: ' + err);})
 });
 
-app.delete('/users/:userId/account-setting', (req, res)=> {
-  const { userId } = req.params;
-
-  let user = users.find( user => user.id == userId);
-  if (user) {
-    users = users.filter( user => user.id != userId);
-    res.status(200).send(`${userId} is deleted!`);
-  } else {
-    res.status(400).send('Sorry, no users found');
-  }
-});
+//delete a user by username
+app.delete('/users/:username/setting', async (req, res) => {
+  await Users.findOneAndDelete({ username: req.params.username })
+  .then (user => {
+    if (!user) {
+      res.status(400).send(req.params.username +  'not found');
+    } else {
+      res.status(200).send(req.params.username + ' deleted')
+    }
+  }).catch(err => {res.status(500).send('Error: ' + err)})
+})
 
 app.use(express.static('public'));
 
@@ -161,7 +150,6 @@ app.use((err, req, res, next)=>{
   console.error(err.stack);
   res.status(500).send('Something is broken..');
 });
-
 
 //http get method, take in a string/ endpoint, a function includes a request and a response
 app.get ('/', (req, res) => {
