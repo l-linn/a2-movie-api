@@ -11,9 +11,8 @@ let movieSchema = mongoose.Schema({
     deathYear: Number
   },
   genre: {
-    type: String,
-    description: String,
-    required: true
+    type: {type: String,required: true},
+    description: String
   },
   description: {type: String,required: true},
   actors: [String]
