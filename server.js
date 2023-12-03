@@ -2,10 +2,18 @@
 const express = require('express');
 const app = express();
 const uuid = require('uuid');
-
+const cors = require('cors');
+const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const { check, validationResult } = require('express-validator');//destructuring-get the 'check' and 'validationResult' property of express-calidator
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+
+require('./auth')(app);
+require('./passport');
 
 //connect mongoDB with mongoose
 const mongoose = require('mongoose');
@@ -14,12 +22,21 @@ const Movies = Models.movie;
 const Users = Models.user;
 mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
-require('./auth')(app);
-const passport = require('passport');
-require('./passport');
-
 //create new user
-app.post('/users/register', async (req, res) => {
+app.post('/users/register', [
+  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
+], async (req, res) => {
+
+  // check the validation object for errors
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array()});
+  }
+
+  let hashedPassword = Users.hashPassword(req.body.password);
   await Users.findOne({username: req.body.username})
   .then ((user) => {
     if(user) {
@@ -61,7 +78,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
 //get all genres - not working
 app.get('/movies/genre', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Movies.find().then( movie => {
-    res.status(201).json(movie.genre);
+    res.status(201).json(movie);
   })
   .catch( err => {
     console.log(err);
@@ -178,7 +195,8 @@ app.get ('/', (req, res) => {
   res.send('Hello, this is the font page of the movie app, which has not been built yet..');
 });
 
-app.listen(8080, () =>{
-  console.log('app running on port 8080');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
 
