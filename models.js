@@ -26,6 +26,15 @@ let userSchema = mongoose.Schema({
   favorites: [{type: mongoose.Schema.Types.ObjectId, ref: 'movie' }]
 });
 
+userSchema.statics.hashPassword = (password) => {
+  return bcrypt.hashSync(password, 10);
+};
+
+//Don't use arrow functions when defining instance methods, example below
+userSchema.methods.validatePassword = function (password) {
+  return bcrypt.compareSync(password, this.Password);
+};
+
 let movie = mongoose.model('movie', movieSchema);
 let user = mongoose.model('user', userSchema);
 
