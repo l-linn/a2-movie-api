@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 let movieSchema = mongoose.Schema({
   title: {type: String,required: true},
@@ -32,7 +33,7 @@ userSchema.statics.hashPassword = (password) => {
 
 //Don't use arrow functions when defining instance methods, example below
 userSchema.methods.validatePassword = function (password) {
-  return bcrypt.compareSync(password, this.Password);
+  return bcrypt.compareSync(password, this.password);
 };
 
 let movie = mongoose.model('movie', movieSchema);
@@ -40,4 +41,3 @@ let user = mongoose.model('user', userSchema);
 
 module.exports.movie = movie;
 module.exports.user = user;
-
