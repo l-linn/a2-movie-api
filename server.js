@@ -20,8 +20,8 @@ const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.movie;
 const Users = Models.user;
-//mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
+//mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 //create new user
 app.post('/users/register', [
@@ -31,7 +31,8 @@ app.post('/users/register', [
   check('email', 'Email does not appear to be valid').isEmail()
 ], async (req, res) => {
 
-  // check the validation object for errors
+
+// check the validation object for errors
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array()});
@@ -142,7 +143,6 @@ app.put('/users/:username/profile', passport.authenticate('jwt', {session: false
   }
 
   await Users.findOneAndUpdate({ username: req.params.username },{
-    
     $set: {
     username: req.body.username,
     firstName: req.body.firstName,
@@ -200,4 +200,3 @@ const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
 });
-
