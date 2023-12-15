@@ -20,8 +20,10 @@ const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.movie;
 const Users = Models.user;
-mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
+//mongoose.connect('mongodb://127.0.0.1:27017/movieappDB', {useNewUrlParser: true, useUnifiedTopology: true});
 //mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://lin7cb:c3lJ78n0A23nLqFp@cluster0.vkzg8pg.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
+
 
 //create new user
 app.post('/users/register', [
