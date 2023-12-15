@@ -48,7 +48,7 @@ app.post('/users/register', [
     } else {
       Users.create({
         username: req.body.username,
-        password: req.body.password,
+        password: hashedPassword,
         email: req.body.email,
         birthday: req.body.birthday
       }).then((user) =>{res.status(201).json(user)})
