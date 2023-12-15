@@ -27,7 +27,7 @@ passport.use(
           return callback(null, false, { message: 'Incorrect password.' });
         }
         console.log('finished');
-        return  callback(null, user)
+        return callback(null, user)
       }).catch (err => {
         if (err) {
           console.log(err);
