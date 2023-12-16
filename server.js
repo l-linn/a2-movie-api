@@ -115,7 +115,7 @@ app.get('/movies/:title', passport.authenticate('jwt', {session: false}), async 
 
 //get genre by genre type
 app.get('/movies/genre/:type', passport.authenticate('jwt', {session: false}), (req, res) => {
-  Movies.find({ 'genre.type': req.params.type})
+  Movies.findOne({ 'genre.type': req.params.type})
     .then((movie) => {
       res.json(movie.genre);
     })
