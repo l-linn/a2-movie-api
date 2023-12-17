@@ -125,6 +125,7 @@ app.get('/movies/genre/:type', passport.authenticate('jwt', {session: false}), (
     });
 });
 
+
 //get director by director name
 app.get('/movies/director/:name', passport.authenticate('jwt', {session: false}), async (req, res) => {
   await Movies.findOne({ 'director.name': req.params.name })
