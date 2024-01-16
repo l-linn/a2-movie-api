@@ -7,13 +7,13 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const { check, validationResult } = require('express-validator');//destructuring-get the 'check' and 'validationResult' property of express-calidator
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 const cors = require('cors');
 app.use(cors());
 
-let auth = require('./auth')(app)
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+let auth = require('./auth')(app);
 
 const passport = require('passport');
 require('./passport');
