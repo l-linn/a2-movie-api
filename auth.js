@@ -9,7 +9,7 @@ const passport = require('passport');
 const Models = require('./models.js');
 const Users = Models.user;
 
-require('./passport.js'); // Your local passport file
+require('./passport'); // Your local passport file
 
 let generateJWTToken = (user) => {
   return jwt.sign(user, jwtSecret, {

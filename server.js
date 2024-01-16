@@ -2,17 +2,20 @@
 const express = require('express');
 const app = express();
 const uuid = require('uuid');
-const cors = require('cors');
+
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const { check, validationResult } = require('express-validator');//destructuring-get the 'check' and 'validationResult' property of express-calidator
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const cors = require('cors');
 app.use(cors());
 
-require('./auth')(app);
+let auth = require('./auth')(app)
+
+const passport = require('passport');
 require('./passport');
 
 //connect mongoDB with mongoose
