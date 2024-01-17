@@ -22,7 +22,7 @@ let generateJWTToken = (user) => {
 //POST LOGIN
 module.exports = (router) => {
   router.post('/login', (req, res) => {
-    let hashedPassword = Users.hashPassword(req.body.password);
+    //let hashedPassword = Users.hashPassword(req.body.password);
     passport.authenticate('local', { session: false }, (error, user, info) => {
       if (error || !user) {
         return res.json({
